@@ -2,17 +2,233 @@
   "year": 2026,
   "cuota": 5,
   "participants": [
-    { "id": "p1",  "name": "Marco",          "pending": false, "payments": [false,false,false,false,false,false,false,false,false,false,false,false] },
-    { "id": "p2",  "name": "Elena",          "pending": false, "payments": [false,false,false,false,false,false,false,false,false,false,false,false] },
-    { "id": "p3",  "name": "Felix",          "pending": false, "payments": [false,false,false,false,false,false,false,false,false,false,false,false] },
-    { "id": "p4",  "name": "Aurora",         "pending": false, "payments": [false,false,false,false,false,false,false,false,false,false,false,false] },
-    { "id": "p5",  "name": "Rosy",           "pending": false, "payments": [false,false,false,false,false,false,false,false,false,false,false,false] },
-    { "id": "p6",  "name": "Edwin Canasa",   "pending": false, "payments": [false,false,false,false,false,false,false,false,false,false,false,false] },
-    { "id": "p7",  "name": "Marilu",         "pending": false, "payments": [false,false,false,false,false,false,false,false,false,false,false,false] },
-    { "id": "p8",  "name": "Edwin",          "pending": false, "payments": [false,false,false,false,false,false,false,false,false,false,false,false] },
-    { "id": "p9",  "name": "Juan",           "pending": false, "payments": [false,false,false,false,false,false,false,false,false,false,false,false] },
-    { "id": "p10", "name": "Edwin Arce",     "pending": false, "payments": [false,false,false,false,false,false,false,false,false,false,false,false] },
-    { "id": "p11", "name": "Marilyn",        "pending": false, "payments": [false,false,false,false,false,false,false,false,false,false,false,false] },
-    { "id": "p12", "name": "Yanet",          "pending": true,  "payments": [false,false,false,false,false,false,false,false,false,false,false,false] }
+    {
+      "id": "p1",
+      "name": "Marco",
+      "pending": false,
+      "payments": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "id": "p2",
+      "name": "Elena",
+      "pending": false,
+      "payments": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "id": "p3",
+      "name": "Felix",
+      "pending": false,
+      "payments": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "p4",
+      "name": "Aurora",
+      "pending": false,
+      "payments": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "p5",
+      "name": "Rosy",
+      "pending": false,
+      "payments": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "p6",
+      "name": "Edwin Canasa",
+      "pending": false,
+      "payments": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "p7",
+      "name": "Marilu",
+      "pending": false,
+      "payments": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "p8",
+      "name": "Edwin",
+      "pending": false,
+      "payments": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "p9",
+      "name": "Juan",
+      "pending": false,
+      "payments": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "p10",
+      "name": "Edwin Arce",
+      "pending": false,
+      "payments": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "p11",
+      "name": "Marilyn",
+      "pending": false,
+      "payments": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "p12",
+      "name": "Yanet",
+      "pending": true,
+      "payments": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
   ]
 }
