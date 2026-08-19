@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Libro de Cuotas — Control de Pagos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #EFE3C8;
+    --paper-line: #d9c9a3;
+    --ink: #1F2E4A;
+    --ink-soft: #4b5a78;
+    --rust: #B23A2E;
+    --stamp-green: #2F6B4F;
+    --gold: #C08A28;
+    --muted: #6B5B43;
+    --white: #fbf7ec;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(var(--paper), var(--paper) 37px, var(--paper-line) 38px);
+    background-color:var(--paper);
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px;}
+
+  header{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    border-bottom:4px double var(--ink);
+    padding-bottom:14px;margin-bottom:26px;flex-wrap:wrap;gap:14px;
+  }
+  .title-block h1{
+    font-family:'Zilla Slab',serif;font-weight:700;font-size:2.3rem;
+    margin:0 0 2px;letter-spacing:.3px;
+  }
+  .title-block .sub{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--muted);}
+  .admin-controls{display:flex;gap:10px;align-items:center;}
+  button{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:.85rem;
+    border:2px solid var(--ink);background:var(--white);color:var(--ink);
+    padding:9px 14px;border-radius:3px;cursor:pointer;transition:.15s;
+  }
+  button:hover{background:var(--ink);color:var(--white);}
+  button.primary{background:var(--ink);color:var(--white);}
+  button.primary:hover{background:var(--rust);border-color:var(--rust);}
+  button.ghost{border-color:var(--muted);color:var(--muted);}
+  button.ghost:hover{background:var(--muted);color:var(--white);}
+  button:disabled{opacity:.4;cursor:not-allowed;}
+  button:disabled:hover{background:var(--white);color:var(--ink);}
+
+  .badge-mode{
+    font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;
+    padding:5px 10px;border-radius:20px;letter-spacing:.5px;
+  }
+  .badge-mode.view{background:#dfe6d4;color:var(--stamp-green);border:1px solid var(--stamp-green);}
+  .badge-mode.admin{background:#f3dcd8;color:var(--rust);border:1px solid var(--rust);}
+
+  .toolbar{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:16px;flex-wrap:wrap;gap:10px;
+  }
+  .year-cuota{font-family:'IBM Plex Mono',monospace;font-size:.9rem;color:var(--ink-soft);display:flex;gap:18px;align-items:center;}
+  .year-cuota input{
+    font-family:'IBM Plex Mono',monospace;font-size:.9rem;width:64px;
+    border:1px solid var(--paper-line);background:var(--white);padding:3px 6px;border-radius:3px;
+  }
+  .admin-tools{display:flex;gap:8px;flex-wrap:wrap;}
+
+  .table-scroll{overflow-x:auto;border:2px solid var(--ink);background:var(--white);}
+  table{border-collapse:collapse;width:100%;min-width:1000px;}
+  thead th{
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.72rem;
+    text-transform:uppercase;letter-spacing:.6px;color:var(--muted);
+    background:var(--paper);border-bottom:2px solid var(--ink);
+    padding:10px 6px;text-align:center;position:sticky;top:0;
+  }
+  thead th.name-col{text-align:left;padding-left:16px;min-width:170px;}
+  thead th.total-col{color:var(--ink);}
+  tbody td{
+    border-bottom:1px solid var(--paper-line);border-right:1px dashed var(--paper-line);
+    text-align:center;padding:6px;
+  }
+  tbody tr:nth-child(even){background:#f7f1e2;}
+  td.name-cell{
+    text-align:left;padding-left:16px;font-family:'Zilla Slab',serif;font-size:1.02rem;font-weight:600;
+    display:flex;align-items:center;gap:8px;
+  }
+  td.name-cell input{
+    font-family:'Zilla Slab',serif;font-size:1.02rem;font-weight:600;border:none;
+    border-bottom:1px dashed var(--gold);background:transparent;width:100%;color:var(--ink);
+  }
+  .pending-badge{
+    font-family:'IBM Plex Mono',monospace;font-size:.62rem;background:var(--gold);
+    color:var(--white);padding:2px 6px;border-radius:10px;white-space:nowrap;
+  }
+  .remove-btn{
+    border:none;background:none;color:var(--rust);font-size:.9rem;cursor:pointer;
+    padding:0 4px;opacity:.6;
+  }
+  .remove-btn:hover{opacity:1;background:none;color:var(--rust);}
+
+  .cell-btn{
+    width:38px;height:38px;border-radius:4px;border:1px solid var(--paper-line);
+    background:var(--white);cursor:default;position:relative;
+  }
+  .cell-btn.editable{cursor:pointer;}
+  .cell-btn.editable:hover{border-color:var(--gold);}
+  .cell-btn .stamp{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-weight:700;
+    font-size:.55rem;letter-spacing:.5px;color:var(--stamp-green);
+    border:2px solid var(--stamp-green);border-radius:4px;padding:3px 2px;
+    transform:rotate(-11deg);opacity:.9;
+  }
+  .cell-btn.unpaid .stamp{display:none;}
+
+  td.total-cell{
+    font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--ink);
+    background:#f1e6cd;
+  }
+  tfoot td{
+    border-top:3px double var(--ink);font-family:'IBM Plex Mono',monospace;
+    font-weight:700;padding:12px 6px;text-align:center;background:var(--paper);
+  }
+  tfoot td.name-cell{text-align:left;padding-left:16px;font-family:'Zilla Slab',serif;}
+  tfoot td.total-cell{color:var(--rust);font-size:1.05rem;background:var(--paper);}
+
+  .footer-note{
+    margin-top:22px;font-family:'IBM Plex Mono',monospace;font-size:.75rem;
+    color:var(--muted);line-height:1.6;
+  }
+  .footer-note strong{color:var(--ink);}
+
+  .modal-bg{
+    position:fixed;inset:0;background:rgba(31,46,74,.55);display:none;
+    align-items:center;justify-content:center;z-index:50;
+  }
+  .modal-bg.open{display:flex;}
+  .modal{
+    background:var(--white);border:3px solid var(--ink);border-radius:4px;
+    padding:26px;width:320px;font-family:'Inter',sans-serif;
+  }
+  .modal h3{font-family:'Zilla Slab',serif;margin-top:0;}
+  .modal input{
+    width:100%;padding:8px;border:1px solid var(--paper-line);border-radius:3px;
+    margin:10px 0 16px;font-family:'IBM Plex Mono',monospace;
+  }
+  .modal .row{display:flex;gap:8px;justify-content:flex-end;}
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--white);padding:10px 18px;border-radius:4px;
+    font-family:'IBM Plex Mono',monospace;font-size:.8rem;opacity:0;
+    transition:opacity .25s;pointer-events:none;z-index:60;
+  }
+  .toast.show{opacity:1;}
+
+  @media (max-width:640px){
+    .title-block h1{font-size:1.7rem;}
+    .toolbar{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="title-block">
+      <h1>Libro de Cuotas</h1>
+      <div class="sub">control mensual de aportes — S/ <span id="cuotaDisplay">5</span>.00 por integrante</div>
+    </div>
+    <div class="admin-controls">
+      <span id="modeBadge" class="badge-mode view">MODO: SOLO LECTURA</span>
+      <button id="loginBtn" class="primary">🔒 Entrar como admin</button>
+      <button id="logoutBtn" class="ghost" style="display:none;">Salir</button>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="year-cuota">
+      <span>Año: <input id="yearInput" type="number" disabled></span>
+      <span>Cuota S/: <input id="cuotaInput" type="number" disabled></span>
+    </div>
+    <div class="admin-tools" id="adminTools" style="display:none;">
+      <button id="addPersonBtn">+ Agregar integrante</button>
+      <button id="exportBtn">⬇ Exportar data.json</button>
+      <button id="importBtn">⬆ Importar data.json</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none;">
+      <button id="resetBtn" class="ghost">↺ Recargar del repositorio</button>
+    </div>
+  </div>
+
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th class="name-col">Integrante</th>
+          <th>Ene</th><th>Feb</th><th>Mar</th><th>Abr</th><th>May</th><th>Jun</th>
+          <th>Jul</th><th>Ago</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dic</th>
+          <th class="total-col">Total S/</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+      <tfoot>
+        <tr>
+          <td class="name-cell">TOTAL GENERAL</td>
+          <td colspan="12"></td>
+          <td class="total-cell" id="grandTotal">S/ 0.00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="footer-note">
+    <strong>Cómo funciona:</strong> haz clic en un mes para marcar el pago (solo el admin puede hacerlo). El sello verde <strong>PAGADO</strong> indica que ese mes está cubierto. "Yanet" figura como <em>por confirmar</em> hasta que el admin la confirme.<br>
+    Como esta página está publicada en GitHub Pages (sitio estático), los cambios del admin se guardan en su navegador. Para que <strong>todos los usuarios vean los cambios</strong>, el admin debe exportar el archivo <code>data.json</code> actualizado y subirlo al repositorio de GitHub.
+  </div>
+
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3>Acceso de administrador</h3>
+    <input type="password" id="passwordInput" placeholder="Contraseña">
+    <div class="row">
+      <button id="cancelLogin" class="ghost">Cancelar</button>
+      <button id="confirmLogin" class="primary">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ CONFIGURACIÓN ============
+// Cambia esta contraseña antes de publicar. No es una seguridad "a prueba de balas"
+// (el sitio es estático), pero evita que usuarios comunes editen el libro.
+const ADMIN_PASSWORD = "MYJ";
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const STORAGE_KEY = 'pagos_data_v1';
+
+let data = null;
+let isAdmin = false;
+
+// ============ CARGA DE DATOS ============
+async function loadData(){
+  let fetched = null;
+  try{
+    const res = await fetch('data.json', {cache:'no-store'});
+    fetched = await res.json();
+  }catch(e){ console.warn('No se pudo leer data.json', e); }
+
+  const local = localStorage.getItem(STORAGE_KEY);
+  if(local){
+    try{ data = JSON.parse(local); }
+    catch(e){ data = fetched; }
+  } else {
+    data = fetched;
+  }
+
+  if(!data){
+    data = { year: new Date().getFullYear(), cuota: 5, participants: [] };
+  }
+  render();
+}
+
+function saveLocal(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// ============ RENDER ============
+function render(){
+  document.getElementById('yearInput').value = data.year;
+  document.getElementById('cuotaInput').value = data.cuota;
+  document.getElementById('cuotaDisplay').textContent = data.cuota;
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  let grandTotal = 0;
+
+  data.participants.forEach((p, pIdx) => {
+    const tr = document.createElement('tr');
+
+    const nameTd = document.createElement('td');
+    nameTd.className = 'name-cell';
+    nameTd.innerHTML = `
+      <input value="${escapeHtml(p.name)}" ${isAdmin ? '' : 'disabled'} data-pidx="${pIdx}" class="nameInput">
+      ${p.pending ? '<span class="pending-badge">por confirmar</span>' : ''}
+      ${isAdmin ? `<button class="remove-btn" data-pidx="${pIdx}" title="Quitar">✕</button>` : ''}
+    `;
+    tr.appendChild(nameTd);
+
+    let totalPaid = 0;
+    MONTHS.forEach((m, mIdx) => {
+      const td = document.createElement('td');
+      const paid = !!p.payments[mIdx];
+      if(paid) totalPaid++;
+      const btn = document.createElement('div');
+      btn.className = 'cell-btn ' + (paid ? 'paid' : 'unpaid') + (isAdmin ? ' editable' : '');
+      btn.innerHTML = '<span class="stamp">PAGADO</span>';
+      if(isAdmin){
+        btn.addEventListener('click', () => togglePayment(pIdx, mIdx));
+      }
+      td.appendChild(btn);
+      tr.appendChild(td);
+    });
+
+    const totalSoles = totalPaid * data.cuota;
+    grandTotal += totalSoles;
+    const totalTd = document.createElement('td');
+    totalTd.className = 'total-cell';
+    totalTd.textContent = `S/ ${totalSoles.toFixed(2)}`;
+    tr.appendChild(totalTd);
+
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('grandTotal').textContent = `S/ ${grandTotal.toFixed(2)}`;
+
+  // listeners para nombres editables
+  document.querySelectorAll('.nameInput').forEach(inp=>{
+    inp.addEventListener('change', e=>{
+      const idx = e.target.dataset.pidx;
+      data.participants[idx].name = e.target.value;
+      saveLocal();
+    });
+  });
+  document.querySelectorAll('.remove-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const idx = e.target.dataset.pidx;
+      if(confirm(`¿Quitar a "${data.participants[idx].name}" del libro?`)){
+        data.participants.splice(idx,1);
+        saveLocal();
+        render();
+      }
+    });
+  });
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function togglePayment(pIdx, mIdx){
+  data.participants[pIdx].payments[mIdx] = !data.participants[pIdx].payments[mIdx];
+  saveLocal();
+  render();
+}
+
+// ============ ADMIN LOGIN ============
+const modalBg = document.getElementById('modalBg');
+document.getElementById('loginBtn').addEventListener('click', ()=>{
+  modalBg.classList.add('open');
+  document.getElementById('passwordInput').value = '';
+  document.getElementById('passwordInput').focus();
+});
+document.getElementById('cancelLogin').addEventListener('click', ()=> modalBg.classList.remove('open'));
+document.getElementById('confirmLogin').addEventListener('click', tryLogin);
+document.getElementById('passwordInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') tryLogin();
+});
+function tryLogin(){
+  const val = document.getElementById('passwordInput').value;
+  if(val === ADMIN_PASSWORD){
+    isAdmin = true;
+    modalBg.classList.remove('open');
+    setAdminUI();
+    showToast('Sesión de admin iniciada');
+    render();
+  } else {
+    showToast('Contraseña incorrecta');
+  }
+}
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  isAdmin = false;
+  setAdminUI();
+  render();
+  showToast('Sesión cerrada');
+});
+function setAdminUI(){
+  document.getElementById('loginBtn').style.display = isAdmin ? 'none' : 'inline-block';
+  document.getElementById('logoutBtn').style.display = isAdmin ? 'inline-block' : 'none';
+  document.getElementById('adminTools').style.display = isAdmin ? 'flex' : 'none';
+  document.getElementById('yearInput').disabled = !isAdmin;
+  document.getElementById('cuotaInput').disabled = !isAdmin;
+  const badge = document.getElementById('modeBadge');
+  badge.textContent = isAdmin ? 'MODO: ADMINISTRADOR' : 'MODO: SOLO LECTURA';
+  badge.className = 'badge-mode ' + (isAdmin ? 'admin' : 'view');
+}
+
+// ============ CONTROLES ADMIN ============
+document.getElementById('yearInput').addEventListener('change', e=>{
+  data.year = parseInt(e.target.value) || data.year;
+  saveLocal();
+});
+document.getElementById('cuotaInput').addEventListener('change', e=>{
+  data.cuota = parseFloat(e.target.value) || data.cuota;
+  saveLocal();
+  render();
+});
+document.getElementById('addPersonBtn').addEventListener('click', ()=>{
+  const name = prompt('Nombre del nuevo integrante:');
+  if(name && name.trim()){
+    data.participants.push({
+      id: 'p' + Date.now(),
+      name: name.trim(),
+      pending: false,
+      payments: new Array(12).fill(false)
+    });
+    saveLocal();
+    render();
+    showToast('Integrante agregado');
+  }
+});
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'data.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('data.json descargado — súbelo a GitHub para publicar los cambios');
+});
+document.getElementById('importBtn').addEventListener('click', ()=>{
+  document.getElementById('importFile').click();
+});
+document.getElementById('importFile').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = evt=>{
+    try{
+      data = JSON.parse(evt.target.result);
+      saveLocal();
+      render();
+      showToast('Datos importados correctamente');
+    }catch(err){
+      showToast('Archivo inválido');
+    }
+  };
+  reader.readAsText(file);
+});
+document.getElementById('resetBtn').addEventListener('click', async ()=>{
+  if(!confirm('Esto descarta tus cambios locales no exportados y recarga desde data.json. ¿Continuar?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  await loadData();
+  showToast('Datos recargados desde el repositorio');
+});
+
+// ============ TOAST ============
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2600);
+}
+
+loadData();
+</script>
+</body>
+</html>
